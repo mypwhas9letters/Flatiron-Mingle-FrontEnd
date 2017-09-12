@@ -26,3 +26,20 @@ ul {
 .delete-note-link {
   color:red;
 }
+
+#sign-in-page{
+  background-image: url(https://static.pexels.com/photos/347144/pexels-photo-347144.jpeg);
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+
+#sign-in-create-form{
+  text-align: center;
+  padding-top: 25%;
+}
+/*#bg-img {
+  background-size: contain;
+  width: 100%
+}*/

@@ -1,5 +1,5 @@
 class App {
   constructor() {
-    this.notes = new Notes()
+    this.users = new Users()
   }
 }
