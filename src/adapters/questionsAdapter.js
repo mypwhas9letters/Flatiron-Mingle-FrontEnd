@@ -15,7 +15,8 @@ class QuestionsAdapter {
       },
       body: JSON.stringify({question:obj, user:userId})
     }
-    return fetch(this.baseUrl, questionCreateParams).then(resp => resp.json())
+    return fetch(this.baseUrl, questionCreateParams).then(function(resp){
+      return resp.json()})
   }
 
 }

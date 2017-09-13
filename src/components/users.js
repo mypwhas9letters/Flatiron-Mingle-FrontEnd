@@ -69,33 +69,19 @@ class Users {
       .then( (userJSON) => {
         let u = new User(userJSON)
         this.users.push(u)
-         console.log(1);
-        return u
+        let requests = params.map((question)=>{
+          return u.questions.adapter.createQuestion(question, u.id)
+        })
+
+        return Promise.all(requests)
       })
-      .then(user => {
-        const questionPromise = Promise.resolve()
-        for(let i in params){
-          questionPromise.then(() =>{
-          user.questions.adapter.createQuestion(params[i], user.id)})
-          questionPromise.then(function(resp){
-            let newQ = new Question(resp.body, resp.answer)
-            user.questions.questions.push(newQ)
-
-          })
-
-          //
-          // const q = user.questions.adapter.createQuestion(params[i], user.id)
-          // q.then(function(resp){
-          //   let newQ = new Question(resp.body, resp.answer)
-          //   user.questions.questions.push(newQ)
-
-          //})
-        }
-        questionPromise.then( () => {
-          // this.users = []
-          // this.fetchAndLoadUsers();
-          this.renderShowPage(this.users[this.users.length -1])})
-
+      .then((requests) => {
+        requests.forEach(request => {
+          new Question(request.body, request.answer)
+          this.users[this.users.length -1].questions.questions.push(request)
+        })
+          this.renderShowPage(this.users[this.users.length -1])
+          debugger
       })
   }
 
