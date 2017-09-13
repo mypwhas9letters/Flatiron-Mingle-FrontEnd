@@ -7,13 +7,13 @@ class QuestionsAdapter {
     return fetch(this.baseUrl).then(response => response.json())
   }
 
-  createQuestion(obj) {
+  createQuestion(obj, userId) {
     const questionCreateParams = {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
       },
-      body: JSON.stringify(obj)
+      body: JSON.stringify({question:obj, user:userId})
     }
     return fetch(this.baseUrl, questionCreateParams).then(resp => resp.json())
   }
