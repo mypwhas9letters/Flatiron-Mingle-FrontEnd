@@ -10,5 +10,5 @@ const app = new App()
 //     event.target.parentElement.style.backgroundImage = "url('')"
 //     event.target.parentElement.innerHTML = ""
 //   }
-//
-//   });
+
+  // });

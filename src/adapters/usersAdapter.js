@@ -13,7 +13,7 @@ class UsersAdapter {
       headers: {
         'Content-Type':'application/json'
       },
-      name: JSON.stringify({name})
+      body: JSON.stringify({name})
     }
     return fetch(this.baseUrl, userCreateParams).then(resp => resp.json())
   }
