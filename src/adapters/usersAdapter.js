@@ -7,13 +7,13 @@ class UsersAdapter {
     return fetch(this.baseUrl).then(response => response.json())
   }
 
-  createUser(name) {
+  createUser(name, age, gender) {
     const userCreateParams = {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
       },
-      body: JSON.stringify({name})
+      body: JSON.stringify({name: name, age:age, gender:gender})
     }
     return fetch(this.baseUrl, userCreateParams).then(resp => resp.json())
   }

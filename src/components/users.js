@@ -4,7 +4,7 @@ class Users {
     this.initBindingsAndEventListeners()
     this.adapter = new UsersAdapter()
     this.fetchAndLoadUsers()
-    this.sampleQuestions = ["Do you like to read?", "Do you like the outdoors?", "Do you like animals?", "Do you watch Game of Thrones?","Are you OK with alcohol?"]
+    this.sampleQuestions = ["Do you like to read?", "Do you like the outdoors?", "Do you like animals?", "Do you watch Game of Thrones?","Are you OK with alcohol?", "Have you ever been married?", "Do you like tattoos?", "Are you close to your family?", "Are you romantic?", "Do you play any sports?", "Do you want to have kids in the future?", "Are you multi-lingual?", "Do you like to snowboard/ski?", "Are you into art?"]
   }
 
   initBindingsAndEventListeners() {
@@ -47,7 +47,13 @@ class Users {
     for (let i = 0; i<this.sampleQuestions.length; i++){
       questionString += `${i+1}. ${this.sampleQuestions[i]}:<br> <input type='radio' name='${this.sampleQuestions[i]}' value="Yes">Yes <input type='radio' name='${this.sampleQuestions[i]}'  value="No">No<br>`
     }
-    signInPage.innerHTML = `${newName}<form name="${newName}" id="newUserAnswers">${questionString}<input type="submit" value="Find your match"></form>`
+    signInPage.innerHTML = `${newName}
+    <form id="ageAndGender">
+
+    Age: <input type="number" min="18" max="100" value="18"><br>
+    Gender: <input type='radio' name='gender' value="Male">Male <input type='radio' name='Female'  value="Female">Female<br>
+    </form>
+    <form name="${newName}" id="newUserAnswers">${questionString}<input type="submit" value="Find your match"></form>`
     const submitNewUser = document.getElementById('newUserAnswers')
 
     submitNewUser.addEventListener("submit", this.handleFormFilled.bind(this))
@@ -68,8 +74,16 @@ class Users {
       }
     }
 
+  let ageandgender = document.getElementById("ageAndGender")
+  let newage = ageandgender.elements[0].value
+  let newgender = ""
+    if(ageandgender.elements[1].checked === true){
+      newgender = "Male"
+    }else{
+      newgender = "Female"
+    }
     // create user and associate questions with user
-    const newUser = this.adapter.createUser(ans.name)
+    const newUser = this.adapter.createUser(ans.name, newage, newgender )
       .then( (userJSON) => {
         let u = new User(userJSON)
         this.users.push(u)
@@ -138,20 +152,23 @@ class Users {
     let denom = 100/this.sampleQuestions.length
     let num = 0
     for(let i in this.sampleQuestions){
-      if (user.questions.hasOwnProperty('questions')){
-        if(user.questions.questions[i].answer === user2.questions[i].answer){
+          // debugger
+      //if existing user, both user1 and 2 are .questions
+      // debugger
+      if (user.questions.hasOwnProperty('questions') === false){
+        if(user.questions[i].answer === user2.questions[i].answer){
           num += denom
         }
       } else {
-
-        if(user.questions[i].answer === user2.questions[i].answer){
+        //new users
+        if(user.questions.questions[i].answer === user2.questions[i].answer){
           num += denom
         }
       }
     }
-
-    newMatch.percentage = (num)
-    newMatch.html = `<li> Name: ${user2.name} | Compatability: ${num} </li>`
+    num = (Math.round(100*num)/100)
+    newMatch.percentage = num
+    newMatch.html = `<li> Name: ${user2.name}| Age: ${user2.age}| Gender: ${user2.gender} Compatability: ${num}% </li>`
 
     console.log(newMatch)
     return newMatch
