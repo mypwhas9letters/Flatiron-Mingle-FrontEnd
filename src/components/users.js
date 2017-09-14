@@ -21,24 +21,29 @@ class Users {
       })
       .then( this.render.bind(this) )
       .catch( () => alert('The server does not appear to be running') )
-  }
+    }
 
   handleAddUser() {
     event.preventDefault()
     const newName = this.userInput.value
     let x = []
+
+    // check if name exists
     this.users.forEach(user => x.push(user.name))
     if (x.includes(newName)){
       for(let i in this.users){
+        // User exists.
         if(this.users[i].name === newName){
           this.renderShowPage(this.users[i])
         }
       }
     }else{
+      // User doesnt already exist.
       this.renderNewForm(newName)
     }
   }
 
+  // Show sign up form
   renderNewForm(newName){
     let signInPage = document.getElementById('sign-in-page')
     event.target.parentElement.style.backgroundImage = "url('')"
@@ -47,15 +52,18 @@ class Users {
     for (let i = 0; i<this.sampleQuestions.length; i++){
       questionString += `${i+1}. ${this.sampleQuestions[i]}:<br> <input type='radio' name='${this.sampleQuestions[i]}' value="Yes">Yes <input type='radio' name='${this.sampleQuestions[i]}'  value="No">No<br>`
     }
-    signInPage.innerHTML = `${newName}
-    <form id="ageAndGender">
 
-    Age: <input type="number" min="18" max="100" value="18"><br>
-    Gender: <input type='radio' name='gender' value="Male">Male <input type='radio' name='Female'  value="Female">Female<br>
+    let formTemplate = `Welcome: ${newName}
+    <form id="ageAndGender" >
+      Age: <input type="number" min="18" max="100" value="18"><br>
+      Gender: <input type='radio' name='gender' value="Male">Male <input type='radio' name='gender'  value="Female">Female<br>
     </form>
-    <form name="${newName}" id="newUserAnswers">${questionString}<input type="submit" value="Find your match"></form>`
-    const submitNewUser = document.getElementById('newUserAnswers')
+    <form name="${newName}" id="newUserAnswers">
+      ${questionString}<input type="submit" value="Find your match">
+    </form>`
 
+    signInPage.innerHTML = formTemplate
+    const submitNewUser = document.getElementById('newUserAnswers')
     submitNewUser.addEventListener("submit", this.handleFormFilled.bind(this))
   }
 
@@ -74,15 +82,15 @@ class Users {
       }
     }
 
-  let ageandgender = document.getElementById("ageAndGender")
-  let newage = ageandgender.elements[0].value
-  let newgender = ""
-    if(ageandgender.elements[1].checked === true){
-      newgender = "Male"
-    }else{
-      newgender = "Female"
-    }
-    // create user and associate questions with user
+    let ageandgender = document.getElementById("ageAndGender")
+    let newage = ageandgender.elements[0].value
+    let newgender = ""
+      if(ageandgender.elements[1].checked === true){
+        newgender = "Male"
+      }else{
+        newgender = "Female"
+      }
+      // create user and associate questions with user
     const newUser = this.adapter.createUser(ans.name, newage, newgender )
       .then( (userJSON) => {
         let u = new User(userJSON)
@@ -90,7 +98,6 @@ class Users {
         let requests = params.map((question)=>{
           return u.questions.adapter.createQuestion(question, u.id)
         })
-
         return Promise.all(requests)
       })
       .then((requests) => {
@@ -102,31 +109,14 @@ class Users {
       })
   }
 
-
-  // handleDeleteUser() {
-  //   if (event.target.dataset.action === 'delete-' && event.target.parentElement.classList.contains("user-element")) {
-  //     const userId = event.target.parentElement.dataset.userid
-  //     this.adapter.deleteUser(userId)
-  //     .then( resp => this.removeDeletedUser(resp) )
-  //   }
-  // }
-
-  // removeDeletedUser(deleteResponse) {
-  //   this.users = this.users.filter( user => user.id !== deleteResponse.userId )
-  //   this.render()
-  // }
-
   renderShowPage(user){
     let signInPage = document.getElementById('sign-in-page')
     let matchesArr = this.getLoveMatches(user)
-
-    let template = `<ul>`
+    let template = `<div class="ui four column doubling stackable grid">`
     for(let i in matchesArr){
       template += matchesArr[i].html
     }
-    signInPage.innerHTML = template + `</ul>`
-
-
+    signInPage.innerHTML = template + `</div>`
     signInPage.style.backgroundImage = "url('')"
   }
 
@@ -138,7 +128,6 @@ class Users {
         matches.push(match)
       }
     }
-
     let sortedMatches = matches.sort(function(a,b) {return (a.percentage > b.percentage) ? 1 : ((b.percentage > a.percentage) ? -1 : 0);} ).reverse()
     return sortedMatches
   }
@@ -148,19 +137,14 @@ class Users {
       name: user2.name,
       percentage: 0
     }
-
     let denom = 100/this.sampleQuestions.length
     let num = 0
     for(let i in this.sampleQuestions){
-          // debugger
-      //if existing user, both user1 and 2 are .questions
-      // debugger
       if (user.questions.hasOwnProperty('questions') === false){
         if(user.questions[i].answer === user2.questions[i].answer){
           num += denom
         }
       } else {
-        //new users
         if(user.questions.questions[i].answer === user2.questions[i].answer){
           num += denom
         }
@@ -168,11 +152,39 @@ class Users {
     }
     num = (Math.round(100*num)/100)
     newMatch.percentage = num
-    newMatch.html = `<li> Name: ${user2.name}| Age: ${user2.age}| Gender: ${user2.gender} Compatability: ${num}% </li>`
-
-    console.log(newMatch)
+    newMatch.html = `  <div class="column">
+        <div class="ui fluid card" style="word-wrap:break-word">
+          <div class="image">
+            <img src=${user2.img} height="200" width="200">
+          </div>
+          <div class="content">
+            <a class="header">${user2.name} <br> Gender: ${user2.gender} <br> Age: ${user2.age} <br>Compatability: ${num}%</a>
+          </div>
+        </div>
+      </div>`
     return newMatch
   }
+//
+// <li> ${user2.name} | ${user2.age} | ${user2.gender} | <img src=${user2.img} height="200" width="200"> | Compatability: ${num}%  </li>
+//
+//     <div class="column">
+//       <div class="ui fluid card">
+//         <div class="image">
+//           <img src=${user2.img} height="200" width="200">
+//         </div>
+//         <div class="content">
+//           <a class="header">${user2.name} ${num}% </a>
+//         </div>
+//       </div>
+//     </div>
+
+
+
+
+
+
+
+
 
   usersHTML() {
     return this.users.map( user => user.render() ).join('')

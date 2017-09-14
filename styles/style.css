@@ -1,4 +1,4 @@
-body {
+/*body {
    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
    font-weight: 300;
    line-height: 1.6em;
@@ -11,21 +11,21 @@ a {
 
 input {
   font-size: 1.5em;
-}
+}*/
 
-.container {
+/*.container {
   width: 960px;
   margin:auto;
   margin-top:50px;
-}
-
+}*/
+/*
 ul {
   padding-left: 20px;
-}
+}*/
 
-.delete-note-link {
+/*.delete-note-link {
   color:red;
-}
+}*/
 
 #sign-in-page{
   background-image: url(https://static.pexels.com/photos/347144/pexels-photo-347144.jpeg);
@@ -52,3 +52,24 @@ ul {
   padding-top: 20%;
   color: #B22222;
 }
+
+footer.footer {
+  text-align: center;
+  border-top: solid #E5E5E5;
+}
+
+.main.container {
+    margin-top: 2em;
+  }
+
+ .text.container .left.floated.image {
+   margin: 2em 2em 2em -4em;
+ }
+ .text.container .right.floated.image {
+   margin: 2em -4em 2em 2em;
+ }
+
+ .ui.footer.segment {
+   margin: 5em 0em 0em;
+   padding: 5em 0em;
+ }

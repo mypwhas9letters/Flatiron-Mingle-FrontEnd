@@ -4,6 +4,7 @@ class User {
     this.id = userJSON.id
     this.gender = userJSON.gender
     this.age = userJSON.age
+    this.img = userJSON.img
     //this.questions = new Questions()
     if (userJSON.questions.length > 1){
       this.questions = userJSON.questions
