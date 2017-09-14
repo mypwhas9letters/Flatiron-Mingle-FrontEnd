@@ -4,7 +4,12 @@ class User {
     this.id = userJSON.id
     this.gender = userJSON.gender
     this.age = userJSON.age
-    this.questions = new Questions()
+    //this.questions = new Questions()
+    if (userJSON.questions.length > 1){
+      this.questions = userJSON.questions
+    }else{
+      this.questions = new Questions()
+    }
   }
 
   render() {

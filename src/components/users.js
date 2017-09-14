@@ -5,7 +5,6 @@ class Users {
     this.adapter = new UsersAdapter()
     this.fetchAndLoadUsers()
     this.sampleQuestions = ["Do you like to read?", "Do you like the outdoors?", "Do you like animals?", "Do you watch Game of Thrones?","Are you OK with alcohol?"]
-
   }
 
   initBindingsAndEventListeners() {
@@ -17,7 +16,9 @@ class Users {
 
   fetchAndLoadUsers() {
     this.adapter.getUsers()
-      .then( usersJSON => usersJSON.forEach( user => this.users.push( new User(user) )))
+      .then( usersJSON => {
+        usersJSON.forEach( user => this.users.push( new User(user) ))
+      })
       .then( this.render.bind(this) )
       .catch( () => alert('The server does not appear to be running') )
   }
@@ -28,8 +29,11 @@ class Users {
     let x = []
     this.users.forEach(user => x.push(user.name))
     if (x.includes(newName)){
-      console.log("render show page ");
-      // render show page
+      for(let i in this.users){
+        if(this.users[i].name === newName){
+          this.renderShowPage(this.users[i])
+        }
+      }
     }else{
       this.renderNewForm(newName)
     }
@@ -81,7 +85,6 @@ class Users {
           this.users[this.users.length -1].questions.questions.push(request)
         })
           this.renderShowPage(this.users[this.users.length -1])
-          debugger
       })
   }
 
@@ -101,43 +104,56 @@ class Users {
 
   renderShowPage(user){
     let signInPage = document.getElementById('sign-in-page')
+    let matchesArr = this.getLoveMatches(user)
 
     let template = `<ul>`
-    for(let i in this.users){
-      template += `<li>${this.users[i].name}</li>`
+    for(let i in matchesArr){
+      template += matchesArr[i].html
     }
     signInPage.innerHTML = template + `</ul>`
-    let matchesArr = this.getLoveMatches(user)
+
+
+    signInPage.style.backgroundImage = "url('')"
   }
 
   getLoveMatches(user){
     let matches = []
     for(let i in this.users){
-      debugger
-      let match = this.calculateLovePercent(user, this.users[i])
-      matches.push(match)
+      if(user !== this.users[i]){
+        let match = this.calculateLovePercent(user, this.users[i])
+        matches.push(match)
+      }
     }
 
-    // sort the list
-    // return the list
+    let sortedMatches = matches.sort(function(a,b) {return (a.percentage > b.percentage) ? 1 : ((b.percentage > a.percentage) ? -1 : 0);} ).reverse()
+    return sortedMatches
   }
 
   calculateLovePercent(user, user2){
     let newMatch = {
       name: user2.name,
-      percentage: 0,
-      html: ``
+      percentage: 0
     }
-    let denom = this.sampleQuestions.length/100
-    let num = 0
 
+    let denom = 100/this.sampleQuestions.length
+    let num = 0
     for(let i in this.sampleQuestions){
-      if(user.questions.questions[i] === user2.questions.questions[i]){
-        num += denom
+      if (user.questions.hasOwnProperty('questions')){
+        if(user.questions.questions[i].answer === user2.questions[i].answer){
+          num += denom
+        }
+      } else {
+
+        if(user.questions[i].answer === user2.questions[i].answer){
+          num += denom
+        }
       }
     }
 
-    newMatch.pecentage = num/100
+    newMatch.percentage = (num)
+    newMatch.html = `<li> Name: ${user2.name} | Compatability: ${num} </li>`
+
+    console.log(newMatch)
     return newMatch
   }
 

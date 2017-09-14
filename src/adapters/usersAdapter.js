@@ -4,9 +4,7 @@ class UsersAdapter {
   }
 
   getUsers() {
-    return fetch(this.baseUrl).then(response => response.json()).then(
-      console.log
-    )
+    return fetch(this.baseUrl).then(response => response.json())
   }
 
   createUser(name) {
