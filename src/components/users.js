@@ -51,21 +51,34 @@ class Users {
     signInPage.innerHTML = `<form> </form>`
     let questionString = ""
     for (let i = 0; i<this.sampleQuestions.length; i++){
-      questionString += `${i+1}. ${this.sampleQuestions[i]}:<br> <input type='radio' name='${this.sampleQuestions[i]}' value="Yes">Yes <input type='radio' name='${this.sampleQuestions[i]}'  value="No">No<br>`
+      questionString += `<div class="ui segment">${i+1}. ${this.sampleQuestions[i]}:<br> <input type='radio' name='${this.sampleQuestions[i]}' value="Yes">Yes <input type='radio' name='${this.sampleQuestions[i]}'  value="No">No<br></div>`
     }
-    // Image: <input type="text"><br>
-    // Bio:  <input type="field"><br>
-    let formTemplate = `Welcome: ${newName}
-    <form id="ageAndGender" >
-      Age: <input type="number" min="18" max="100" value="18"><br>
-      Gender: <input type='radio' name='gender' value="Male">Male <input type='radio' name='gender'  value="Female">Female<br>
-      Image: <input type="text"><br>
-      Bio:  <input type="field"><br>
-    </form>
-    <form name="${newName}" id="newUserAnswers">
-      ${questionString}<input type="submit" value="Find your match">
-    </form>`
 
+    let formTemplate = `
+    <div class="ui container ">
+      <div class="ui container ">
+
+      <h1>Welcome: ${newName}</h1>
+        <form id="ageAndGender" >
+          Age: <input type="number" min="18" max="100" value="18"><br>
+          Gender: <input type='radio' name='gender' value="Male">Male <input type='radio' name='gender'  value="Female">Female<br>
+          Image: <input type="text"><br>
+          Bio:  <textarea rows="2"></textarea><br>
+        </form>
+        </div>
+        <div class="ui container ">
+
+        <form name="${newName}" id="newUserAnswers" class="column">
+          <div class="ui segments">
+          ${questionString}
+          </div>
+          <input type="submit" value="Find your match" class="ui primary button">
+        </form>
+        <br>
+        </div>
+
+      </div>
+      `
     signInPage.innerHTML = formTemplate
     const submitNewUser = document.getElementById('newUserAnswers')
    submitNewUser.addEventListener("submit", this.handleFormFilled.bind(this))
@@ -117,9 +130,6 @@ class Users {
     let signInPage = document.getElementById('sign-in-page')
     this.matchesArr = this.getLoveMatches(user)
     this.createShowPage(this.matchesArr)
-
-    // const renderProfilePage = document.getElementById('seeprofile')
-    // renderProfilePage.addEventListener("click", this.showProfilePage.bind(this))
   }
 
   createShowPage(array){
@@ -137,6 +147,7 @@ class Users {
       <form id="agefilter" >
         Min Age: <input type="number" min="18" max="100" value="18">
         Max Age: <input type="number" min="18" max="100" value="18">
+        <input value="Submit" class="ui primary button">
       </form>
     </div>
     </div><br>
@@ -153,8 +164,14 @@ class Users {
 
     const filterDiv = document.getElementById("genderSelector")
     filterDiv.addEventListener("click", this.filterMatches.bind(this))
-  // const filterDiv = document.getElementById("genderSelector")
-  // filterDiv.addEventListener("click", this.filterMatches.bind(this))
+
+    //show individual profile page
+  //   const renderProfilePage = document.getElementById('sign-in-page')
+  //   renderProfilePage.addEventListener("click", function() {
+  //    if(event.target.className === 'seeprofile'){
+  //      Users.prototype.showProfilePage()
+  //    }
+  //  })
   }
 
   filterMatches(){
@@ -201,6 +218,7 @@ class Users {
     let num = 0
     for(let i in this.sampleQuestions){
       //old user
+      console.log(user2)
       if (user.questions.hasOwnProperty('questions') === false){
         if(user.questions[i].answer === user2.questions[i].answer){
           num += denom
@@ -224,7 +242,7 @@ class Users {
             <img src=${user2.img} height="200">
           </div>
           <div class="content">
-            <a id="seeprofile" data-id=${user2.id} class="header">Name: ${user2.name} <br>Gender: ${user2.gender} <br>Age: ${user2.age} <br>Compatability: ${num}%</a>
+            <a class="seeprofile" data-id=${user2.id} class="header">Name: ${user2.name} <br>Gender: ${user2.gender} <br>Age: ${user2.age} <br>Compatability: ${num}%</a>
           </div>
         </div>
       </div>`
@@ -249,6 +267,7 @@ class Users {
   showProfilePage(){
     let signInPage = document.getElementById('sign-in-page')
     signInPage.innerHTML = "Profile Page"
+    debugger
   }
 
 
