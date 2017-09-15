@@ -4,6 +4,7 @@ class Users {
     this.initBindingsAndEventListeners()
     this.adapter = new UsersAdapter()
     this.fetchAndLoadUsers()
+    this.matchesArr = []
     this.sampleQuestions = ["Do you like to read?", "Do you like the outdoors?", "Do you like animals?", "Do you watch Game of Thrones?","Are you OK with alcohol?", "Have you ever been married?", "Do you like tattoos?", "Are you close to your family?", "Are you romantic?", "Do you play any sports?", "Do you want to have kids in the future?", "Are you multi-lingual?", "Do you like to snowboard/ski?", "Are you into art?"]
   }
 
@@ -46,17 +47,20 @@ class Users {
   // Show sign up form
   renderNewForm(newName){
     let signInPage = document.getElementById('sign-in-page')
-    event.target.parentElement.style.backgroundImage = "url('')"
+    event.target.parentElement.parentElement.style.backgroundImage = "url('')"
     signInPage.innerHTML = `<form> </form>`
     let questionString = ""
     for (let i = 0; i<this.sampleQuestions.length; i++){
       questionString += `${i+1}. ${this.sampleQuestions[i]}:<br> <input type='radio' name='${this.sampleQuestions[i]}' value="Yes">Yes <input type='radio' name='${this.sampleQuestions[i]}'  value="No">No<br>`
     }
-
+    // Image: <input type="text"><br>
+    // Bio:  <input type="field"><br>
     let formTemplate = `Welcome: ${newName}
     <form id="ageAndGender" >
       Age: <input type="number" min="18" max="100" value="18"><br>
       Gender: <input type='radio' name='gender' value="Male">Male <input type='radio' name='gender'  value="Female">Female<br>
+      Image: <input type="text"><br>
+      Bio:  <input type="field"><br>
     </form>
     <form name="${newName}" id="newUserAnswers">
       ${questionString}<input type="submit" value="Find your match">
@@ -64,7 +68,7 @@ class Users {
 
     signInPage.innerHTML = formTemplate
     const submitNewUser = document.getElementById('newUserAnswers')
-    submitNewUser.addEventListener("submit", this.handleFormFilled.bind(this))
+   submitNewUser.addEventListener("submit", this.handleFormFilled.bind(this))
   }
 
   handleFormFilled(newName){
@@ -111,13 +115,69 @@ class Users {
 
   renderShowPage(user){
     let signInPage = document.getElementById('sign-in-page')
-    let matchesArr = this.getLoveMatches(user)
-    let template = `<div class="ui four column doubling stackable grid">`
-    for(let i in matchesArr){
-      template += matchesArr[i].html
+    this.matchesArr = this.getLoveMatches(user)
+    this.createShowPage(this.matchesArr)
+
+    // const renderProfilePage = document.getElementById('seeprofile')
+    // renderProfilePage.addEventListener("click", this.showProfilePage.bind(this))
+  }
+
+  createShowPage(array){
+    let signInPage = document.getElementById('sign-in-page')
+    let template = `
+    <div class="ui container">
+    <div>Filters:</div>
+    <div id="genderSelector" class="ui labeled button">
+      <div class="ui basic label">Gender:</div>
+      <div class="ui button" id="bothgenders">Both</div>
+      <div class="ui button" id="males">Male</div>
+      <div class="ui button" id="females">Female</div>
+    </div>
+    <div class="ui labeled button">
+      <form id="agefilter" >
+        Min Age: <input type="number" min="18" max="100" value="18">
+        Max Age: <input type="number" min="18" max="100" value="18">
+      </form>
+    </div>
+    </div><br>
+    <div class="ui four column doubling stackable grid">
+    `
+    let renderString = ""
+    if (array === this.matchesArr){
+      renderString = this.createhtmlstring(this.matchesArr)
+    }else{
+      renderString = this.createhtmlstring(array)
     }
-    signInPage.innerHTML = template + `</div>`
+    signInPage.innerHTML = template + renderString + `</div>`
     signInPage.style.backgroundImage = "url('')"
+
+    const filterDiv = document.getElementById("genderSelector")
+    filterDiv.addEventListener("click", this.filterMatches.bind(this))
+  // const filterDiv = document.getElementById("genderSelector")
+  // filterDiv.addEventListener("click", this.filterMatches.bind(this))
+  }
+
+  filterMatches(){
+    const criteria = event.target.innerText
+    let newarr = []
+    if(criteria !== "Both"){
+      for(let i in this.matchesArr){
+        if (this.matchesArr[i].html.includes(criteria)){
+          newarr.push(this.matchesArr[i])
+          }
+        }
+      this.createShowPage(newarr)
+    }else{
+      this.createShowPage(this.matchesArr)
+    }
+  }
+
+  createhtmlstring(matchesArr){
+    let htmlstring = ""
+    for(let i in matchesArr){
+      htmlstring += matchesArr[i].html
+    }
+    return htmlstring
   }
 
   getLoveMatches(user){
@@ -140,6 +200,7 @@ class Users {
     let denom = 100/this.sampleQuestions.length
     let num = 0
     for(let i in this.sampleQuestions){
+      //old user
       if (user.questions.hasOwnProperty('questions') === false){
         if(user.questions[i].answer === user2.questions[i].answer){
           num += denom
@@ -150,15 +211,20 @@ class Users {
         }
       }
     }
+    if(user2.img === null && user2.gender === "Male"){
+      user2.img = "http://loyalkng.com/wp-content/uploads/2010/01/facebook-art-no-photo-image-batman-mickey-mouse-spock-elvis-rick-roll.jpg"
+    }else if(user2.img === null && user2.gender === "Female"){
+      user2.img = "https://www.qfeast.com/imret/u/d2t5ie.jpg"
+    }
     num = (Math.round(100*num)/100)
     newMatch.percentage = num
     newMatch.html = `  <div class="column">
         <div class="ui fluid card" style="word-wrap:break-word">
           <div class="image">
-            <img src=${user2.img} height="200" width="200">
+            <img src=${user2.img} height="200">
           </div>
           <div class="content">
-            <a class="header">${user2.name} <br> Gender: ${user2.gender} <br> Age: ${user2.age} <br>Compatability: ${num}%</a>
+            <a id="seeprofile" data-id=${user2.id} class="header">Name: ${user2.name} <br>Gender: ${user2.gender} <br>Age: ${user2.age} <br>Compatability: ${num}%</a>
           </div>
         </div>
       </div>`
@@ -180,7 +246,10 @@ class Users {
 
 
 
-
+  showProfilePage(){
+    let signInPage = document.getElementById('sign-in-page')
+    signInPage.innerHTML = "Profile Page"
+  }
 
 
 
