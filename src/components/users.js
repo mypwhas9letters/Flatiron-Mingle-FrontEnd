@@ -169,7 +169,6 @@ class Users {
   //   const renderProfilePage = document.getElementById('sign-in-page')
   //   renderProfilePage.addEventListener("click", function() {
   //    if(event.target.className === 'seeprofile'){
-  //      Users.prototype.showProfilePage()
   //    }
   //  })
   }
